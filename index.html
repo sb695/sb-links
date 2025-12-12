@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>SB_ART69 // RESTRICTED</title>
+    <link rel="icon" type="image/png" href="profile.png">
+
+    <meta property="og:title" content="SB_ART69 // LINK TERMINAL">
+    <meta property="og:description" content="Access restricted art content and social feeds.">
+    <meta property="og:image" content="profile.png">
+    <meta property="og:type" content="website">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="SB_ART69 // LINK TERMINAL">
+    <meta name="twitter:description" content="Access restricted art content and social feeds.">
+    <meta name="twitter:image" content="profile.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --eva-purple: #6e0dd0;
+            --eva-green: #39ff14; /* Standard Text */
+            --eva-orange: #ff5f00; /* Warnings/Alerts */
+            --eva-red: #ff0000; /* Critical */
+            --dark-base: #050505;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            background-color: #000;
+            color: var(--eva-green);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* --- BACKGROUND IMAGE SETTINGS --- */
+        body {
+            /* This looks for 'background.png' in the same folder */
+            background: url('background.png') no-repeat center center/cover;
+            /* Fallback color if image fails to load */
+            background-color: #111;
+        }
+
+        /* Dark Overlay to read text easier */
+        body::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.70); /* Darkens the image by 70% */
+            z-index: -1;
+            /* Scanlines */
+            background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+        }
+
+        /* --- MAIN TERMINAL CARD --- */
+        .card {
+            width: 90%;
+            max-width: 450px;
+            background-color: #000; 
+            border: 2px solid var(--eva-green);
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 0 25px rgba(57, 255, 20, 0.2);
+            z-index: 5;
+            animation: bootUp 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            
+            /* Mecha Corners */
+            clip-path: polygon(
+                20px 0, 100% 0, 100% calc(100% - 20px), 
+                calc(100% - 20px) 100%, 0 100%, 0 20px
+            );
+        }
+
+        .header-area {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--eva-orange);
+            padding-bottom: 15px;
+        }
+
+        .profile-pic {
+            width: 80px; height: 80px;
+            border: 2px solid var(--eva-orange);
+            margin-right: 20px;
+            object-fit: cover;
+            background: #111;
+        }
+
+        .title-block h1 {
+            font-size: 2rem; color: #fff;
+            text-transform: uppercase; letter-spacing: 2px; line-height: 1;
+            text-shadow: 0 0 5px var(--eva-green);
+        }
+
+        .title-block span {
+            color: var(--eva-orange); font-size: 0.8rem; letter-spacing: 3px;
+        }
+
+        /* --- LINKS --- */
+        .link-row { display: flex; flex-direction: column; gap: 15px; }
+
+        .btn {
+            background: rgba(10, 10, 10, 0.8);
+            color: var(--eva-green);
+            text-decoration: none;
+            padding: 15px 20px;
+            border: 1px solid var(--eva-green);
+            display: flex; align-items: center; justify-content: space-between;
+            transition: 0.2s; text-transform: uppercase;
+            font-weight: bold; font-size: 1.1rem;
+        }
+
+        .btn:hover {
+            background: var(--eva-green);
+            color: #000;
+            box-shadow: 0 0 15px var(--eva-green);
+            transform: translateX(5px);
+        }
+
+        .btn i { font-size: 1.4rem; width: 30px; text-align: center; }
+        .btn-text { flex-grow: 1; padding-left: 10px; }
+        .btn-status { font-size: 0.7rem; opacity: 0.6; }
+
+        /* Patreon Special */
+        .patreon-btn { border-color: var(--eva-orange); color: var(--eva-orange); }
+        .patreon-btn:hover {
+            background: var(--eva-orange); color: #000;
+            box-shadow: 0 0 15px var(--eva-orange);
+        }
+
+        /* --- THE 18+ POPUP MODAL --- */
+        .modal-overlay {
+            display: none; /* Hidden by default */
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+            justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-box {
+            width: 85%; max-width: 400px;
+            background: #000;
+            border: 3px solid var(--eva-red);
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.4);
+            animation: flashWarning 0.5s;
+            position: relative;
+        }
+
+        /* Decoration: "Emergency" stripes */
+        .modal-box::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+            background: repeating-linear-gradient(
+                45deg, var(--eva-red), var(--eva-red) 10px, #000 10px, #000 20px
+            );
+        }
+
+        .modal-icon { font-size: 3rem; color: var(--eva-red); margin-bottom: 1rem; }
+        .modal-title { color: var(--eva-red); font-size: 1.5rem; margin-bottom: 0.5rem; letter-spacing: 2px; }
+        .modal-text { color: #fff; margin-bottom: 2rem; font-size: 0.9rem; line-height: 1.4; }
+
+        .modal-buttons { display: flex; gap: 10px; }
+        
+        .m-btn {
+            flex: 1; padding: 15px; border: 1px solid var(--eva-red);
+            background: transparent; color: var(--eva-red);
+            font-family: 'Share Tech Mono', monospace; font-size: 1rem; font-weight: bold;
+            cursor: pointer; transition: 0.3s;
+        }
+        
+        .m-btn:hover { background: var(--eva-red); color: #000; }
+        
+        /* The "Safe" button */
+        .m-btn-back { border-color: #555; color: #888; }
+        .m-btn-back:hover { background: #333; color: #fff; border-color: #fff; }
+
+        /* Animations */
+        @keyframes bootUp {
+            from { opacity: 0; transform: scaleY(0); }
+            to { opacity: 1; transform: scaleY(1); }
+        }
+        @keyframes flashWarning {
+            0% { opacity: 0; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.02); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .footer { margin-top: 30px; text-align: center; font-size: 0.7rem; opacity: 0.5; color: var(--eva-purple); }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="header-area">
+            <img src="profile.png" class="profile-pic" alt="Profile">
+            <div class="title-block">
+                <h1>@sb_art69</h1>
+                <span>SYNC RATIO: 100%</span>
+            </div>
+        </div>
+
+        <div class="link-row">
+            <a href="#" class="btn patreon-btn" onclick="triggerWarning('https://patreon.com/sb_art69')">
+                <i class="fab fa-patreon"></i>
+                <span class="btn-text">ACCESS PATREON</span>
+                <span class="btn-status">[RESTRICTED]</span>
+            </a>
+
+            <a href="https://instagram.com/sb_art69" class="btn" onclick="track('Instagram')">
+                <i class="fab fa-instagram"></i>
+                <span class="btn-text">INSTAGRAM</span>
+                <span class="btn-status">[OPEN]</span>
+            </a>
+
+            <a href="https://twitter.com/sb_art69" class="btn" onclick="track('Twitter')">
+                <i class="fab fa-twitter"></i>
+                <span class="btn-text">TWITTER / X</span>
+                <span class="btn-status">[OPEN]</span>
+            </a>
+            
+            <a href="#" class="btn" onclick="track('Portfolio')">
+                <i class="fas fa-image"></i>
+                <span class="btn-text">GALLERY</span>
+                <span class="btn-status">[VIEW]</span>
+            </a>
+        </div>
+
+        <div class="footer">NERV UI // SYSTEM.V.4.4</div>
+    </div>
+
+    <div class="modal-overlay" id="ageModal">
+        <div class="modal-box">
+            <i class="fas fa-exclamation-triangle modal-icon"></i>
+            <h2 class="modal-title">WARNING</h2>
+            <p class="modal-text">
+                This link leads to <strong>adult content</strong> intended for mature audiences only.
+                <br><br>
+                <strong>Are you over 18 years of age?</strong>
+            </p>
+            <div class="modal-buttons">
+                <button class="m-btn m-btn-back" onclick="closeModal()">NO / EXIT</button>
+                <button class="m-btn" onclick="proceedToLink()">YES, I AM 18+</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let targetUrl = "";
+
+        // Function called when Patreon is clicked
+        function triggerWarning(url) {
+            targetUrl = url; // Save the link
+            document.getElementById('ageModal').style.display = 'flex'; // Show popup
+        }
+
+        // User clicked "No"
+        function closeModal() {
+            document.getElementById('ageModal').style.display = 'none';
+        }
+
+        // User clicked "Yes"
+        function proceedToLink() {
+            // Track the click if analytics is present
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'click', {'event_category': 'Patreon', 'event_label': '18+ Confirmed'});
+            }
+            // Go to the link
+            window.location.href = targetUrl;
+        }
+
+        // Simple tracker for other links
+        function track(platform) {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'click', {'event_category': 'Link', 'event_label': platform});
+            }
+        }
+    </script>
+</body>
+</html>
